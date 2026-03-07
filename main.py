@@ -14,6 +14,7 @@ face_mesh = mp_face_mesh.FaceMesh(refine_landmarks=True, max_num_faces=1)
 cap = cv2.VideoCapture(0)
 
 while cap.isOpened():
+
     ret, frame = cap.read()
     if not ret:
         break
@@ -23,6 +24,37 @@ while cap.isOpened():
 
     status = "Proctoring: OK"
     color = (0, 255, 0)
+    
+    if results.multi_face_landmarks:
+        landmarks = results.multi_face_landmarks[0].landmark
+
+        # LEFT EYE
+        left_eye_left = landmarks[33].x
+        left_eye_right = landmarks[133].x
+        left_iris = landmarks[468].x
+
+        # RIGHT EYE
+        right_eye_left = landmarks[362].x
+        right_eye_right = landmarks[263].x
+        right_iris = landmarks[473].x
+
+        # Calculate iris ratio inside the eye
+        left_ratio = (left_iris - left_eye_left) / (left_eye_right - left_eye_left)
+        right_ratio = (right_iris - right_eye_left) / (right_eye_right - right_eye_left)
+
+        gaze_ratio = (left_ratio + right_ratio) / 2
+
+        if gaze_ratio < 0.35:
+            status = "EYE STATUS: LOOKING LEFT"
+            color = (0,0,255)
+
+        elif gaze_ratio > 0.65:
+            status = "EYE STATUS: LOOKING RIGHT"
+            color = (0,0,255)
+
+        else:
+            status = "EYE STATUS: LOOKING CENTER"
+            color = (0,255,0)
 
     if results.multi_face_landmarks:
         landmarks = results.multi_face_landmarks[0].landmark
