@@ -20,7 +20,6 @@ class ProctoringEngine:
         self.model = mobilenet_v3_small(weights=self.weights)
         self.model.eval()
 
-        # Preprocessing transform for PyTorch
         self.preprocess = self.weights.transforms()
 
     # -------------------- Phone Detection --------------------
